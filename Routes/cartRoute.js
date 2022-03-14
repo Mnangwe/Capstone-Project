@@ -30,6 +30,7 @@ router.get('/', verifyAdmin, async (req, res) => {
 router.get('/:userId', authenticateToken, async (req, res) => {
     try{
         const cart = await Cart.findOne({userId: req.params.userId})
+        if(cart == null) { return res.status(500).json({msg: "You have not added anything in cart"})}
         res.status(200).json(cart)
     }catch(err){
         res.status(500).json({ msg: err.message })
@@ -39,7 +40,7 @@ router.get('/:userId', authenticateToken, async (req, res) => {
 // UPDATE A CART
 router.put('/:id', authenticateToken, async (req, res) => {
     try{
-        const updateCart = Cart.findByIdAndUpdate(
+        const updateCart = await Cart.findByIdAndUpdate(
             req.params.id, 
             {
                 $set: req.body

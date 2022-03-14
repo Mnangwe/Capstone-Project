@@ -54,7 +54,7 @@ router.get('/:id', verifyAuthorization, async (req, res) => {
     
 // })
 
-// UPDATE A USER
+// UPDATE A USER PROFILE
 router.put('/:id', verifyAuthorization , async (req, res) => {
     
     if(req.body.password) {
@@ -81,12 +81,11 @@ router.put('/:id', verifyAuthorization , async (req, res) => {
 
 // UPDATE ROLES
 router.put('/:id/role', verifyAdmin , async (req, res) => {
-
     try{
         const updateUser = await User.findByIdAndUpdate(
             req.params.id, 
             {
-                $set: req.body.isAdmin
+                $set: req.body
             }, 
             {
                 new: true
@@ -111,7 +110,6 @@ router.delete('/:id',verifyAuthorization, async (req, res) => {
 
 router.post('/login', async (req, res)=>{
     try{
-        
         const user = await User.findOne({ username: req.body.username})
 
         if(!user) {
@@ -125,23 +123,10 @@ router.post('/login', async (req, res)=>{
             res.json({ jwt: accessToken })
             console.log({msg: 'Successfully logged in!'})
             
-                
-
-           
         }else{
             return res.status(401).json({ msg: "Wrong password" })
         }
-        
-        
-        // const accessToken = jwt.sign({
-        //     id: user._id,
-        //     isAdmin: user.isAdmin,
-        // }, process.env.JWT_TOKEN_SECRET)
 
-        // const { password, ...others} = user._doc
-        // res.status(200).send(user)
-        
-        
     }catch(err){
         res.status(500).json({ msg: err.message})
     }

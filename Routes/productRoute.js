@@ -52,7 +52,7 @@ router.get('/:id', verifyAuthorization, async (req, res) => {
 // UPDATE A PRODUCT
 router.put('/:id', verifyAdmin, async (req, res) => {
     try{
-        const updateProduct = Product.findByIdAndUpdate(
+        const updateProduct = await Product.findByIdAndUpdate(
             req.params.id, 
             {
                 $set: req.body
