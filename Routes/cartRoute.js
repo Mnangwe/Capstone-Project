@@ -2,11 +2,27 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken, verifyAdmin } = require('../authGuard/auth');
 const Cart = require('../Model/Cart');
+const Product = require('../Model/Product')
 
+async function getProduct(req, res, next) {
+    let product
+    try {
+        product = await Product.findById(req.params.id)
+      if(!product) res.status(404).json({ msg: 'Cannot find product'})
+    }catch (err) {
+      res.status(500).send({ msg: err.message })
+    }
+
+    res.product = product
+    next()
+}
 
 //  CREATER A CART
-router.post('/', authenticateToken, async (req, res, next) => {
-    const cart = new Cart(req.body)
+router.post('/', [authenticateToken], async (req, res, next) => {
+    // const product = await new Product.findById(req.params.id)
+    const cart = new Cart(
+        req.body
+    )
     try {
         const newCart = await cart.save()
         res.status(200).send(newCart)
@@ -17,7 +33,6 @@ router.post('/', authenticateToken, async (req, res, next) => {
 
 //  GET ALL CARTS
 router.get('/', verifyAdmin, async (req, res) => {
-    
     try{
         const carts = await Cart.find()
         res.status(200).json(carts)
@@ -65,6 +80,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ msg: err.message })
     }
 })
+
+
 
 
 module.exports = router;

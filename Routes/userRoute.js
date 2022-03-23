@@ -38,12 +38,24 @@ router.get('/', verifyAdmin, async (req, res) => {
     }
 })
 
-//  GET A USER
+//  GET A USER FOR ADMIN
 router.get('/:id', verifyAuthorization, async (req, res) => {
     try{
         const user = await User.findById(req.params.id)
         const { password, ...others} = user._doc
         res.status(200).json(others)
+    }catch(err){
+        res.status(500).json({ msg: err.message })
+    }
+})
+
+// THE LOGED IN USER
+router.get('/:id', verifyAuthorization, async (req, res) => {
+    try{
+        const user = await User.findById(req.user.id)
+        console.log(req.user)
+        // const { password, ...others} = user._doc
+        res.status(200).json(user)
     }catch(err){
         res.status(500).json({ msg: err.message })
     }
@@ -102,12 +114,23 @@ router.put('/:id/role', verifyAdmin , async (req, res) => {
 router.delete('/:id',verifyAuthorization, async (req, res) => {
     try{
         await User.findByIdAndDelete(req.params.id)
+        res.status(200).json({ msg: "You have removed your account"})
+    }catch(err){
+        res.status(500).json({ msg: err.message })
+    }
+})
+
+//  ADMIN REMOVING A USER
+router.delete('/:id/user',verifyAdmin, async (req, res) => {
+    try{
+        await User.findByIdAndDelete(req.params.id)
         res.status(200).json({ msg: "User has been deleted..."})
     }catch(err){
         res.status(500).json({ msg: err.message })
     }
 })
 
+//  LOGIN IN
 router.post('/login', async (req, res)=>{
     try{
         const user = await User.findOne({ email: req.body.email})
@@ -120,7 +143,7 @@ router.post('/login', async (req, res)=>{
             console.log(compared)
             const accessToken = jwt.sign(JSON.stringify(user), process.env.JWT_TOKEN_SECRET)
             console.log({msg: 'Token has been created'})
-            res.json({ jwt: accessToken })
+            res.json({ jwt: accessToken, user: user })
             console.log({msg: 'Successfully logged in!'})
             
         }else{
