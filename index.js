@@ -17,7 +17,7 @@ db.once('open', () => console.log('Connected to Database'))
 
 app.get('/', (req, res, next) =>{
     res.send({
-        message: "Welcome to Azabenathi & Sergio's API",
+        message: "Welcome to Azabenathi API",
         user_routes: {
           user_register: {
             method: "POST",
