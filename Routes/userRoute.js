@@ -143,7 +143,7 @@ router.post('/login', async (req, res)=>{
             console.log(compared)
             const accessToken = jwt.sign(JSON.stringify(user), process.env.JWT_TOKEN_SECRET)
             console.log({msg: 'Token has been created'})
-            res.json({ jwt: accessToken, user: user })
+            res.json({ jwt: accessToken, user})
             console.log({msg: 'Successfully logged in!'})
             
         }else{

@@ -6,17 +6,20 @@ const { authenticateToken, verifyAuthorization, verifyAdmin } = require('../auth
 
 //  CREATER A PRODUCT
 router.post('/', verifyAdmin, async (req, res, next) => {
+    console.log(req.body)
     const product = new Product(req.body)
     try {
         const newProduct = await product.save()
         res.status(200).send(newProduct)
+        console.log("We sent the product")
     }catch(err){
         res.status(500).send({msg : err.message})
+        console.log("We cannot send this product")
     }
 })
 
 //  GET ALL PRODUCTS
-router.get('/', verifyAuthorization, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     const qNew = req.query.new
     const qCategory = req.query.category
     try{
