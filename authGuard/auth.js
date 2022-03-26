@@ -19,6 +19,7 @@ const verifyAuthorization = (req, res, next) => {
             next()
         }else {
             res.status(403).json({msg: "You not allowed"})
+            console.log("You are an admin or normal user")
         }
     })
 }
@@ -29,6 +30,7 @@ const verifyAdmin = (req, res, next) => {
             next()
         }else {
             res.status(403).json({msg: "You not allowed"})
+            console.log("You are an admin")
         }
     })
 }
