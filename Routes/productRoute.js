@@ -19,7 +19,7 @@ router.post('/', verifyAdmin, async (req, res, next) => {
 })
 
 //  GET ALL PRODUCTS
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', async (req, res) => {
     const qNew = req.query.new
     const qCategory = req.query.category
     try{
