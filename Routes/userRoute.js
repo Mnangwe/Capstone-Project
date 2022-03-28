@@ -19,7 +19,10 @@ router.post('/', async (req, res, next) => {
     })
     try {
         const newUser = await user.save()
-        res.status(200).send(newUser)
+        const accessToken = jwt.sign(JSON.stringify(newUser), process.env.JWT_TOKEN_SECRET)
+        console.log({msg: 'Token has been created'})
+        res.json({ jwt: accessToken, newUser})
+        console.log({msg: 'Registered successful!'})
     }catch(err){
         res.status(500).send({msg : err.message})
     }
