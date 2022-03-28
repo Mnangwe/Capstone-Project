@@ -64,7 +64,7 @@ router.put('/:id', verifyAdmin, async (req, res) => {
                 new: true
             }
         )
-        res.status(200).json(updateProduct)
+        res.status(200).json({msg: "You updated the product", updateProduct})
     }catch(err){
         res.status(500).json({msg: err.message})
     }
