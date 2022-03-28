@@ -124,7 +124,7 @@ router.delete('/:id',verifyAuthorization, async (req, res) => {
 })
 
 //  ADMIN REMOVING A USER
-router.delete('/:id/user',verifyAdmin, async (req, res) => {
+router.delete('/:id',verifyAdmin, async (req, res) => {
     try{
         await User.findByIdAndDelete(req.params.id)
         res.status(200).json({ msg: "User has been deleted..."})
