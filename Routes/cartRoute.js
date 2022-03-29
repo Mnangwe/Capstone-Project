@@ -125,6 +125,7 @@ router.get('/', verifyAdmin, async (req, res) => {
 router.get('/:userId', authenticateToken, async (req, res) => {
     try{
         const cart = await Cart.find({userId: req.params.userId})
+        console.log(cart)
         if(cart == null) { return res.status(500).json({msg: "You have not added anything in cart"})}
         res.status(200).json(cart[0])
         
@@ -134,21 +135,33 @@ router.get('/:userId', authenticateToken, async (req, res) => {
 })
 
 // UPDATE A CART
-router.put('/:id', authenticateToken, async (req, res) => {
-    try{
-        const updateCart = await Cart.findByIdAndUpdate(
-            req.params.id, 
-            {
-                $set: req.body
-            }, 
-            {
-                new: true
-            }
-        )
-        res.status(200).json(updateCart)
-    }catch(err){
-        res.status(500).json({msg: err.message})
+router.put('/:prodId', [authenticateToken, getProduct], async (req, res) => {
+    const userCart = await Cart.findOne({userId: req.user._id})
+    const oneProd = userCart.products.some(prod => prod._id ==req.params.id)
+    if(oneProd){
+        userCart.quantity += req.body.quantity;
+        const updatedUser = await userCart.save();
+        try {
+        res.status(201).json(updatedUser);
+        } catch (error) {
+        res.status(500).json(console.log(error));
+        }
     }
+    // try{
+    //     const updateCart = await Cart.findByIdAndUpdate(
+    //         {userId: req.user._id}, 
+    //         {
+    //             $set: req.body
+    //         }, 
+    //         {
+    //             new: true
+    //         }
+    //     )
+    //     console.log("Hey there",updateCart)
+    //     res.status(200).json(updateCart)
+    // }catch(err){
+    //     res.status(500).json({msg: err.message})
+    // }
 
 })
 
