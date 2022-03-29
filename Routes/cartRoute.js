@@ -18,12 +18,40 @@ async function getProduct(req, res, next) {
 }
 
 //  CREATER A CART
-router.post('/', [authenticateToken], async (req, res, next) => {
+router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
     // const product = await new Product.findById(req.params.id)
+    let userId = req.user._id
+    let product_id = res.product._id;
+    let name = res.product.name
+    let categories = res.product.categories
+    let price = res.product.price
+    let image = res.product.image
+    let quantity 
+    if(req.body.quantity) {
+        quantity = req.body.quantity
+    }else{
+        quantity = res.product.quantity
+        }
     const cart = new Cart(
-        req.body
+        {
+            userId,
+            product_id,
+            name,
+            categories,
+            price,
+            image,
+            quantity
+        }
     )
     try {
+        cart.products.push({
+            product_id,
+            name,
+            categories,
+            price,
+            image,
+            quantity
+        })
         const newCart = await cart.save()
         res.status(200).send(newCart)
     }catch(err){
@@ -36,6 +64,7 @@ router.get('/', verifyAdmin, async (req, res) => {
     try{
         const carts = await Cart.find()
         res.status(200).json(carts)
+        console.log(carts.length)
     }catch(err){
         res.status(500).json({ msg: err.message })
     }
@@ -44,9 +73,10 @@ router.get('/', verifyAdmin, async (req, res) => {
 //  GET USER CART
 router.get('/:userId', authenticateToken, async (req, res) => {
     try{
-        const cart = await Cart.findOne({userId: req.params.userId})
+        const cart = await Cart.find({userId: req.params.userId})
         if(cart == null) { return res.status(500).json({msg: "You have not added anything in cart"})}
         res.status(200).json(cart)
+        console.log(cart.length)
     }catch(err){
         res.status(500).json({ msg: err.message })
     }
