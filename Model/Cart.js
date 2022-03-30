@@ -1,4 +1,3 @@
-const { type } = require('express/lib/response')
 const mongoose = require('mongoose')
 
 const cartSchema = new mongoose.Schema({
@@ -7,6 +6,9 @@ const cartSchema = new mongoose.Schema({
     },
     products: {
         type: Array
+    },
+    amount: {
+        type: Number
     }
 }, { timestamps: true }
 )

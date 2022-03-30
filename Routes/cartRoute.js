@@ -21,10 +21,11 @@ async function getProduct(req, res, next) {
 //  CREATER A CART
 router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
     // const product = await new Product.findById(req.params.id)
-    const cartProduct = await Product.findById(res.product._id)
+    // const cartProduct = await Product.findById(res.product._id)
     const userCart = await Cart.findOne({userId: req.user._id})
     // console.log(userCart)
-    
+    console.log("Product", res.product)
+    console.log("UserCart:",userCart)
     let userId = req.user._id
     let product_id = res.product._id;
     let name = res.product.name
@@ -32,19 +33,17 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
     let price = res.product.price
     let image = res.product.image
     let desc = res.product.desc
-    console.log(desc)
     let quantity = 0
     if(req.body.quantity) {
+        
         quantity += req.body.quantity
     }else{
         quantity += res.product.quantity
         }
-    let amount = quantity * price
-    console.log(amount)
-    let cart
-    if(userCart == null){
-        cart = new Cart(
+    let amount = quantity*price
+    const cart = new Cart(
             {
+                amount,
                 userId,
                 product_id,
                 name,
@@ -53,49 +52,50 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
                 image,
                 quantity,
                 desc,
-                amount
+                
             }
         )
-    }else if(userCart != null && req.user._id === userCart.userId){
-        if(userCart.products.find(product => product.product_id == req.params.id)){
-            console.log("Quantity1", quantity)
-            cart = await Cart.findOneAndUpdate(
-                req.params.id,
-                {
-                    $set:{
-                        quantity: quantity
-                    }
-                },
-                {
-                    new: true
-                }
-                )
-        }else{
-            console.log("Quantity2", quantity)
-            cart = await Cart.findOneAndUpdate(
-                {
-                    userId: req.user._id
-                },
-                {
-                    $set:{
+    
+    // }else if(userCart != null && req.user._id === userCart.userId){
+    //     if(userCart.products.find(product => product.product_id == req.params.id)){
+    //         console.log("Quantity1", quantity)
+    //         cart = await Cart.findOneAndUpdate(
+    //             req.params.id,
+    //             {
+    //                 $set:{
+    //                     quantity: quantity
+    //                 }
+    //             },
+    //             {
+    //                 new: true
+    //             }
+    //             )
+    //     }else{
+    //         console.log("Quantity2", quantity)
+    //         cart = await Cart.findOneAndUpdate(
+    //             {
+    //                 userId: req.user._id
+    //             },
+    //             {
+    //                 $set:{
                         
-                        product_id,
-                        name,
-                        categories,
-                        price,
-                        image,
-                        quantity,
-                        desc,
-                        amount
-                    }
-                },
-                {
-                    new: true
-                }
-            )
-        }
+    //                     product_id,
+    //                     name,
+    //                     categories,
+    //                     price,
+    //                     image,
+    //                     quantity,
+    //                     desc,
+    //                     amount
+    //                 }
+    //             },
+    //             {
+    //                 new: true
+    //             }
+    //         )
+    //     }
         
-    }
+    // }
     console.log("QuantityNew", quantity)
     try {
         cart.products.push({
