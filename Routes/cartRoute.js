@@ -31,6 +31,7 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
     let categories = res.product.categories
     let price = res.product.price
     let image = res.product.image
+    let desc = res.product.desc
     let quantity = 0
     
     if(req.body.quantity) {
@@ -49,7 +50,8 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
                 categories,
                 price,
                 image,
-                quantity
+                quantity,
+                desc
             }
         )
     }else if(userCart != null && req.user._id === userCart.userId){
@@ -80,7 +82,8 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
                         categories,
                         price,
                         image,
-                        quantity
+                        quantity,
+                        desc
                     }
                 },
                 {
@@ -98,7 +101,8 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
             categories,
             price,
             image,
-            quantity
+            quantity,
+            desc
         })
             
         const newCart = await cart.save()
