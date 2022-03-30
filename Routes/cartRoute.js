@@ -24,7 +24,7 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
     const cartProduct = await Product.findById(res.product._id)
     const userCart = await Cart.findOne({userId: req.user._id})
     // console.log(userCart)
-
+    
     let userId = req.user._id
     let product_id = res.product._id;
     let name = res.product.name
@@ -32,15 +32,16 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
     let price = res.product.price
     let image = res.product.image
     let desc = res.product.desc
+    console.log(desc)
     let quantity = 0
-    
     if(req.body.quantity) {
         quantity += req.body.quantity
     }else{
         quantity += res.product.quantity
         }
+    let amount = quantity * price
+    console.log(amount)
     let cart
-
     if(userCart == null){
         cart = new Cart(
             {
@@ -51,7 +52,8 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
                 price,
                 image,
                 quantity,
-                desc
+                desc,
+                amount
             }
         )
     }else if(userCart != null && req.user._id === userCart.userId){
@@ -83,7 +85,8 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
                         price,
                         image,
                         quantity,
-                        desc
+                        desc,
+                        amount
                     }
                 },
                 {
