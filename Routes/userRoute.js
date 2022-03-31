@@ -87,7 +87,7 @@ router.put('/:id', verifyAuthorization , async (req, res) => {
                 new: true
             }
         )
-        res.status(200).json(updateUser)
+        res.status(200).json({msg: "You just updated your profile", updateUser})
     }catch(err){
         res.status(500).json({msg: err.message})
     }

@@ -41,7 +41,10 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
         quantity += res.product.quantity
         }
     let amount = quantity*price
-    const cart = new Cart(
+
+    let cart = null
+    if(userCart == null){
+        cart = new Cart(
             {
                 amount,
                 userId,
@@ -56,46 +59,49 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
             }
         )
     
-    // }else if(userCart != null && req.user._id === userCart.userId){
-    //     if(userCart.products.find(product => product.product_id == req.params.id)){
-    //         console.log("Quantity1", quantity)
-    //         cart = await Cart.findOneAndUpdate(
-    //             req.params.id,
-    //             {
-    //                 $set:{
-    //                     quantity: quantity
-    //                 }
-    //             },
-    //             {
-    //                 new: true
-    //             }
-    //             )
-    //     }else{
-    //         console.log("Quantity2", quantity)
-    //         cart = await Cart.findOneAndUpdate(
-    //             {
-    //                 userId: req.user._id
-    //             },
-    //             {
-    //                 $set:{
+    
+    
+    }else if(userCart != null && req.user._id === userCart.userId){
+        if(userCart.products.find(product => product.product_id == req.params.id)){
+            console.log("Quantity1", quantity)
+            cart = await Cart.findOneAndUpdate(
+                req.params.id,
+                {
+                    $set:{
+                        quantity: quantity
+                    }
+                },
+                {
+                    new: true
+                }
+                )
+        }else{
+            console.log("Quantity2", quantity)
+            cart = await Cart.findOneAndUpdate(
+                {
+                    userId: req.user._id
+                },
+                {
+                    $set:{
                         
-    //                     product_id,
-    //                     name,
-    //                     categories,
-    //                     price,
-    //                     image,
-    //                     quantity,
-    //                     desc,
-    //                     amount
-    //                 }
-    //             },
-    //             {
-    //                 new: true
-    //             }
-    //         )
-    //     }
+                        product_id,
+                        name,
+                        categories,
+                        price,
+                        image,
+                        quantity,
+                        desc,
+                        amount
+                    }
+                },
+                {
+                    new: true
+                }
+            )
+        }
         
-    // }
+    }
+    
     console.log("QuantityNew", quantity)
     try {
         cart.products.push({
@@ -105,7 +111,8 @@ router.post('/:id', [authenticateToken, getProduct], async (req, res, next) => {
             price,
             image,
             quantity,
-            desc
+            desc,
+            amount
         })
             
         const newCart = await cart.save()
